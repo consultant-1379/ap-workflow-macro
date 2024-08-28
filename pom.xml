@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.ericsson.oss.autoprovisioning.ap-parent</groupId>
+        <artifactId>ap-parent</artifactId>
+        <version>1.13.1307</version>
+    </parent>
+
+    <groupId>com.ericsson.oss.autoprovisioning.macro</groupId>
+    <artifactId>ap-workflow-macro</artifactId>
+    <version>1.130.17-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>[${project.artifactId}] JEE8 project</name>
+
+    <modules>
+        <module>ap-workflow-cpp-ear</module>
+        <module>ap-workflow-cpp-ejb</module>
+        <module>ap-workflow-cpp-jar</module>
+        <module>ap-workflow-erbs-jar</module>
+        <module>ap-workflow-erbs-war</module>
+        <module>ERICapworkflowmacro_CXP9030538</module>
+        <module>testsuite</module>
+    </modules>
+
+    <scm>
+        <connection>${ericsson.scm.url}</connection>
+        <developerConnection>${ericsson.scm.url}</developerConnection>
+        <tag>ap-workflow-macro-1.129.90</tag>
+    </scm>
+
+    <properties>
+        <version.autoprovisioning.bom>1.14.203</version.autoprovisioning.bom>
+        <!-- Temporary work-around for issue where ap-parent appears in connection when using scm entries from parent pom -->
+        <ericsson.scm.url>scm:git:[fetch=]ssh://gerritmirror-ha.lmera.ericsson.se:29418/OSS/com.ericsson.oss.autoprovisioning.macro/ap-workflow-macro[push=]ssh://gerrit.ericsson.se:29418/OSS/com.ericsson.oss.autoprovisioning.macro/ap-workflow-macro</ericsson.scm.url>
+         <!-- Exclude auto-generated HTML file from SonarQube -->
+        <sonar.exclusions>**/src/test/**</sonar.exclusions>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+                <artifactId>autoprovisioning-bom</artifactId>
+                <version>${version.autoprovisioning.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Versions for all child modules must be specified here, to ensure that correct dependency versions are injected for the internal module dependencies in this repository, and not being overwritten 
+                by versions in the autoprovisioning-bom -->
+            <dependency>
+                <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+                <artifactId>ap-workflow-cpp-ear</artifactId>
+                <version>${project.version}</version>
+                <type>ear</type>
+            </dependency>
+            <dependency>
+                <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+                <artifactId>ap-workflow-cpp-ejb</artifactId>
+                <version>${project.version}</version>
+                <type>ejb</type>
+            </dependency>
+            <dependency>
+                <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+                <artifactId>ap-workflow-cpp-jar</artifactId>
+                <version>${project.version}</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+                <artifactId>ap-workflow-erbs-jar</artifactId>
+                <version>${project.version}</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+                <artifactId>ap-workflow-erbs-war</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-common-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.itpf.datalayer.dps</groupId>
+            <artifactId>dps-test-support</artifactId>
+            <version>${version.dps}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.picketbox</groupId>
+            <artifactId>jboss-security-spi</artifactId>
+            <version>5.0.2.Final</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <configuration>
+                        <doclint>all</doclint>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

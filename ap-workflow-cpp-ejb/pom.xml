@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.ericsson.oss.autoprovisioning.macro</groupId>
+        <artifactId>ap-workflow-macro</artifactId>
+        <version>1.130.17-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+    <artifactId>ap-workflow-cpp-ejb</artifactId>
+    <packaging>ejb</packaging>
+    <name>[${project.parent.artifactId}] CPP EJB module</name>
+
+    <dependencies>
+        <!-- JEE Dependencies -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${version.javax.javaee}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- AP Dependencies -->
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-status-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-cluster-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-validation-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>aps-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-common-cm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-common-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-common-model</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.ericsson.oss.mediation.modeling.tools</groupId>
+                    <artifactId>network-model-identity-converter-jar</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-common-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-common-workflow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-workflow-cpp-jar</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+            <artifactId>ap-workflow-api</artifactId>
+        </dependency>
+
+
+        <!-- ENM Dependencies -->
+        <dependency>
+            <groupId>com.ericsson.oss.itpf.sdk</groupId>
+            <artifactId>sdk-cluster-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.itpf.sdk</groupId>
+            <artifactId>sdk-core-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.itpf.sdk</groupId>
+            <artifactId>sdk-eventbus-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.wfs</groupId>
+            <artifactId>wfs-jee-local-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.itpf.sdk</groupId>
+            <artifactId>sdk-licensing-api</artifactId>
+            <scope>provided</scope>
+        </dependency>      
+        <dependency>
+            <groupId>com.ericsson.oss.itpf.sdk</groupId>
+            <artifactId>sdk-recording-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.wfs</groupId>
+            <artifactId>wfs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.services.security.identitymgmt</groupId>
+            <artifactId>generic-identity-mgmt-service-api</artifactId>
+        </dependency>
+
+        <!-- 3PP Dependencies -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+</project>

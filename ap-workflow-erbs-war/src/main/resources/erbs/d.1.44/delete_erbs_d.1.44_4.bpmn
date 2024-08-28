@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="_o5D-4LDYEeOn961hhB-WUw" targetNamespace="http://camunda.org/schema/1.0/bpmn" exporter="Camunda Modeler" exporterVersion="2.2.3" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:process id="delete_erbs_d.1.44_4" name="AutoProvisioning-Erbs-Delete" isExecutable="true">
+    <bpmn2:serviceTask id="SetupConfiguration" name="Setup Configuration" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.order.SetupConfigurationTask">
+      <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_8</bpmn2:outgoing>
+    </bpmn2:serviceTask>
+    <bpmn2:startEvent id="DeleteIntegrationStart" name="Delete Start">
+      <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_2" name="" sourceRef="DeleteIntegrationStart" targetRef="SetupConfiguration" />
+    <bpmn2:sequenceFlow id="SequenceFlow_8" name="" sourceRef="SetupConfiguration" targetRef="ExclusiveGateway_3" />
+    <bpmn2:serviceTask id="CancelSecurity" name="Cancel Security" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.order.CancelSecurityTask">
+      <bpmn2:incoming>SequenceFlow_5</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
+    </bpmn2:serviceTask>
+    <bpmn2:exclusiveGateway id="ExclusiveGateway_1" name="Security?">
+      <bpmn2:incoming>SequenceFlow_7</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_5</bpmn2:outgoing>
+      <bpmn2:outgoing>SequenceFlow_6</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="SequenceFlow_5" name="yes" sourceRef="ExclusiveGateway_1" targetRef="CancelSecurity">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isSecurityEnabled()==true}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="SequenceFlow_6" name="no" sourceRef="ExclusiveGateway_1" targetRef="ExclusiveGateway_2">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isSecurityEnabled()==false}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:endEvent id="DeleteCompleted" name="Delete Completed">
+      <bpmn2:incoming>SequenceFlow_0pk0ovt</bpmn2:incoming>
+      <bpmn2:messageEventDefinition id="MessageEventDefinition_1" camunda:class="com.ericsson.oss.services.ap.common.workflow.task.order.DeleteCompletedTask" />
+    </bpmn2:endEvent>
+    <bpmn2:exclusiveGateway id="ExclusiveGateway_2">
+      <bpmn2:incoming>SequenceFlow_6</bpmn2:incoming>
+      <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="ExclusiveGateway_2" targetRef="RemoveNode" />
+    <bpmn2:exclusiveGateway id="ExclusiveGateway_3" name="Ignore Node?">
+      <bpmn2:incoming>SequenceFlow_8</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_10</bpmn2:outgoing>
+      <bpmn2:outgoing>SequenceFlow_7</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:serviceTask id="RemoveNode" name="Remove Node" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.order.RemoveNodeTask">
+      <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
+    </bpmn2:serviceTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_4" name="" sourceRef="RemoveNode" targetRef="DHCP_RemoveClientConfiguration" />
+    <bpmn2:serviceTask id="DHCP_RemoveClientConfiguration" name="DHCP Remove Client Configuration" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.DhcpRemoveClientConfigurationTask">
+      <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
+      <bpmn2:incoming>SequenceFlow_10</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_0pk0ovt</bpmn2:outgoing>
+    </bpmn2:serviceTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_0pk0ovt" sourceRef="DHCP_RemoveClientConfiguration" targetRef="DeleteCompleted" />
+    <bpmn2:sequenceFlow id="SequenceFlow_1" name="" sourceRef="CancelSecurity" targetRef="ExclusiveGateway_2" />
+    <bpmn2:sequenceFlow id="SequenceFlow_10" name="yes" sourceRef="ExclusiveGateway_3" targetRef="DHCP_RemoveClientConfiguration">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${(execution.getVariable('deleteIgnoresNetworkElement')==true)}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="SequenceFlow_7" name="no" sourceRef="ExclusiveGateway_3" targetRef="ExclusiveGateway_1">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${(execution.getVariable('deleteIgnoresNetworkElement')==false)}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="delete_erbs_d.1.44_4">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_9" bpmnElement="DeleteIntegrationStart">
+        <dc:Bounds x="24" y="228" width="49" height="49" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="12" y="292" width="75" height="22" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_29" bpmnElement="RemoveNode">
+        <dc:Bounds x="820" y="221" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_12" bpmnElement="ExclusiveGateway_1" isMarkerVisible="true">
+        <dc:Bounds x="431" y="227" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="434" y="282" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_129" bpmnElement="CancelSecurity">
+        <dc:Bounds x="561" y="212" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_5" sourceElement="_BPMNShape_ExclusiveGateway_12" targetElement="_BPMNShape_ServiceTask_129">
+        <di:waypoint x="481" y="252" />
+        <di:waypoint x="559" y="252" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="495" y="239" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_6" sourceElement="_BPMNShape_ExclusiveGateway_12" targetElement="_BPMNShape_ExclusiveGateway_51">
+        <di:waypoint x="456" y="227" />
+        <di:waypoint x="456" y="166" />
+        <di:waypoint x="743" y="166" />
+        <di:waypoint x="743" y="236" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="463" y="209" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_134" bpmnElement="SetupConfiguration">
+        <dc:Bounds x="156" y="213" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_StartEvent_9" targetElement="_BPMNShape_ServiceTask_134">
+        <di:waypoint x="72" y="252" />
+        <di:waypoint x="107" y="252" />
+        <di:waypoint x="156" y="252" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="10" y="252" width="6" height="6" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_8" bpmnElement="SequenceFlow_8" sourceElement="_BPMNShape_ServiceTask_134" targetElement="_BPMNShape_ExclusiveGateway_52">
+        <di:waypoint x="256" y="252" />
+        <di:waypoint x="319" y="252" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="289" y="252" width="6" height="6" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_112" bpmnElement="DeleteCompleted">
+        <dc:Bounds x="1177" y="238" width="49" height="49" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1158" y="292" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_51" bpmnElement="ExclusiveGateway_2" isMarkerVisible="true">
+        <dc:Bounds x="718" y="236" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="628" y="282" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_52" bpmnElement="ExclusiveGateway_3" isMarkerVisible="true">
+        <dc:Bounds x="319" y="227" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="310" y="203" width="67" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_ExclusiveGateway_51" targetElement="_BPMNShape_ServiceTask_29">
+        <di:waypoint x="768" y="261" />
+        <di:waypoint x="819" y="261" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="676" y="252" width="6" height="6" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_ServiceTask_29" targetElement="ServiceTask_1nk7m8i_di">
+        <di:waypoint x="920" y="262" />
+        <di:waypoint x="986" y="262" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="951" y="238.5" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1nk7m8i_di" bpmnElement="DHCP_RemoveClientConfiguration">
+        <dc:Bounds x="986" y="223" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0pk0ovt_di" bpmnElement="SequenceFlow_0pk0ovt">
+        <di:waypoint x="1086" y="263" />
+        <di:waypoint x="1177" y="263" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1128" y="238" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1">
+        <di:waypoint x="661" y="261" />
+        <di:waypoint x="718" y="261" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="554" y="253" width="6" height="6" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_10" bpmnElement="SequenceFlow_10">
+        <di:waypoint x="344" y="277" />
+        <di:waypoint x="344" y="341" />
+        <di:waypoint x="1036" y="341" />
+        <di:waypoint x="1036" y="303" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="323" y="286" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="SequenceFlow_7">
+        <di:waypoint x="369" y="252" />
+        <di:waypoint x="431" y="252" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="390" y="254" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

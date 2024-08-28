@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ProductNumber  = 'CXC 173 3297/TBD'       R-State  = 'R1A'
+DocumentNumber = '3/006 91-CSH 103 22'
+Node version: M13B
+
+File    : SiteInstallation.xml
+Purpose : Example file for Site Installation File
+
+Modified: November 2 2012
+-->
+
+<RbsSiteInstallationFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="SiteInstallation.xsd">
+	<Format revision="J"/>
+	<InstallationData logicalName="LIENB0926" vlanId="3100" rbsIntegrationCode="">
+		<OamIpConfigurationData ipAddress="10.75.0.226" subnetMask="255.255.255.0" defaultRouter0="10.75.0.1">
+			<DnsServer ipAddress="10.75.24.12"/>
+		</OamIpConfigurationData>
+		<SmrsData address="10.44.31.25" summaryFilePath="/nedssv4/AIF/LRBS6010/AutoIntegrationRbsSummaryFile.xml"/>
+	</InstallationData>
+</RbsSiteInstallationFile>
+

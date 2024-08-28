@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="_zPr3YLZdEeOcKfw0rVsCPA" targetNamespace="http://camunda.org/schema/1.0/bpmn" exporter="Camunda Modeler" exporterVersion="3.4.1" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:process id="integrate_erbs_d.1.44_4" name="AutoProvisioning-Erbs-Integrate" isExecutable="true">
+    <bpmn2:startEvent id="overall_integrate_start_event" name="Overall Integrate Start Event">
+      <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_1" name="" sourceRef="overall_integrate_start_event" targetRef="SubProcess_1" />
+    <bpmn2:subProcess id="SubProcess_1">
+      <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
+      <bpmn2:serviceTask id="initiate_node_synchronization" name="Initiate Node Synchronization" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.SyncNodeTask">
+        <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_25</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_25" name="" sourceRef="initiate_node_synchronization" targetRef="site_config_complete" />
+      <bpmn2:startEvent id="integrate_start_event" name="Integrate Start Event">
+        <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+      </bpmn2:startEvent>
+      <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="integrate_start_event" targetRef="initiate_node_synchronization" />
+      <bpmn2:eventBasedGateway id="wait_for_s1_complete_or_not_needed" name="S1 Complete or S1 Not Needed Notification">
+        <bpmn2:extensionElements>
+          <camunda:executionListener class="com.ericsson.oss.services.ap.workflow.erbs.task.listener.integrate.S1CompleteOrNotNeededStartListener" event="start" />
+        </bpmn2:extensionElements>
+        <bpmn2:incoming>SequenceFlow_17</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_10</bpmn2:outgoing>
+        <bpmn2:outgoing>SequenceFlow_12</bpmn2:outgoing>
+      </bpmn2:eventBasedGateway>
+      <bpmn2:sequenceFlow id="SequenceFlow_10" name="" sourceRef="wait_for_s1_complete_or_not_needed" targetRef="s1_complete" />
+      <bpmn2:sequenceFlow id="SequenceFlow_12" name="" sourceRef="wait_for_s1_complete_or_not_needed" targetRef="s1_not_needed" />
+      <bpmn2:exclusiveGateway id="ExclusiveGateway_6" name="Import Configurations Successful?">
+        <bpmn2:incoming>SequenceFlow_13</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_17</bpmn2:outgoing>
+        <bpmn2:outgoing>SequenceFlow_34</bpmn2:outgoing>
+      </bpmn2:exclusiveGateway>
+      <bpmn2:sequenceFlow id="SequenceFlow_17" name="yes" sourceRef="ExclusiveGateway_6" targetRef="wait_for_s1_complete_or_not_needed">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${(execution.getVariable('importConfigurationsSuccessful')==true)}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:sequenceFlow id="SequenceFlow_34" name="no" sourceRef="ExclusiveGateway_6" targetRef="import_failed_end_event">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${(execution.getVariable('importConfigurationsSuccessful')==false)}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:intermediateCatchEvent id="wait_for_import_config_complete" name="Waiting for Import &#10;&#10;&#10;Configurations Completion">
+        <bpmn2:incoming>SequenceFlow_7</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_13</bpmn2:outgoing>
+        <bpmn2:messageEventDefinition id="MessageEventDefinition_4" messageRef="Message_4" />
+      </bpmn2:intermediateCatchEvent>
+      <bpmn2:sequenceFlow id="SequenceFlow_13" name="" sourceRef="wait_for_import_config_complete" targetRef="ExclusiveGateway_6" />
+      <bpmn2:serviceTask id="initiate_import_configurations" name="Initiate Import Configurations" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.InitiateImportConfigurationsTask">
+        <bpmn2:incoming>SequenceFlow_39</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_7</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_7" name="" sourceRef="initiate_import_configurations" targetRef="wait_for_import_config_complete" />
+      <bpmn2:intermediateCatchEvent id="site_config_complete" name="Site Config Complete Notification">
+        <bpmn2:extensionElements>
+          <camunda:executionListener class="com.ericsson.oss.services.ap.workflow.erbs.task.listener.integrate.SiteConfigCompleteStartListener" event="start" />
+          <camunda:executionListener class="com.ericsson.oss.services.ap.workflow.erbs.task.listener.integrate.SiteConfigCompleteEndListener" event="end" />
+        </bpmn2:extensionElements>
+        <bpmn2:incoming>SequenceFlow_25</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_39</bpmn2:outgoing>
+        <bpmn2:messageEventDefinition id="MessageEventDefinition_2" messageRef="Message_9" />
+      </bpmn2:intermediateCatchEvent>
+      <bpmn2:sequenceFlow id="SequenceFlow_39" name="" sourceRef="site_config_complete" targetRef="initiate_import_configurations" />
+      <bpmn2:endEvent id="import_failed_end_event" name="Import Configurations Failed">
+        <bpmn2:incoming>SequenceFlow_34</bpmn2:incoming>
+        <bpmn2:errorEventDefinition id="_ErrorEventDefinition_6" errorRef="Error_1" />
+      </bpmn2:endEvent>
+      <bpmn2:intermediateCatchEvent id="s1_not_needed" name="S1 Not Needed Notification">
+        <bpmn2:extensionElements>
+          <camunda:executionListener expression="${execution.setVariable(&#39;s1_not_needed&#39;,&#39;true&#39;)}" event="start" />
+          <camunda:executionListener class="com.ericsson.oss.services.ap.workflow.erbs.task.listener.integrate.S1NotNeededEndListener" event="end" />
+        </bpmn2:extensionElements>
+        <bpmn2:incoming>SequenceFlow_12</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_24</bpmn2:outgoing>
+        <bpmn2:messageEventDefinition id="MessageEventDefinition_1" messageRef="Message_2" />
+      </bpmn2:intermediateCatchEvent>
+      <bpmn2:intermediateCatchEvent id="s1_complete" name="S1 Complete Notification">
+        <bpmn2:extensionElements>
+          <camunda:executionListener class="com.ericsson.oss.services.ap.workflow.erbs.task.listener.integrate.S1CompleteEndListener" event="end" />
+        </bpmn2:extensionElements>
+        <bpmn2:incoming>SequenceFlow_10</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_11</bpmn2:outgoing>
+        <bpmn2:messageEventDefinition id="MessageEventDefinition_3" messageRef="Message_1" />
+      </bpmn2:intermediateCatchEvent>
+      <bpmn2:sequenceFlow id="SequenceFlow_11" name="" sourceRef="s1_complete" targetRef="ExclusiveGateway_7" />
+      <bpmn2:sequenceFlow id="SequenceFlow_24" name="" sourceRef="s1_not_needed" targetRef="ExclusiveGateway_7" />
+      <bpmn2:exclusiveGateway id="ExclusiveGateway_7" name="Enable Supervision">
+        <bpmn2:incoming>SequenceFlow_11</bpmn2:incoming>
+        <bpmn2:incoming>SequenceFlow_24</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_15</bpmn2:outgoing>
+        <bpmn2:outgoing>SequenceFlow_28</bpmn2:outgoing>
+      </bpmn2:exclusiveGateway>
+      <bpmn2:sequenceFlow id="SequenceFlow_15" name="yes" sourceRef="ExclusiveGateway_7" targetRef="enable_supervision">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isEnableSupervision()==true}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:sequenceFlow id="SequenceFlow_28" name="no" sourceRef="ExclusiveGateway_7" targetRef="create_cv_after_import">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isEnableSupervision()==false}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:serviceTask id="enable_supervision" name="Enable Supervision" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.EnableSupervisionTask">
+        <bpmn2:incoming>SequenceFlow_15</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_32</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_32" name="" sourceRef="enable_supervision" targetRef="create_cv_after_import" />
+      <bpmn2:boundaryEvent id="BoundaryEvent_2" name="" attachedToRef="initiate_gps_position_check">
+        <bpmn2:outgoing>equenceFlow_7</bpmn2:outgoing>
+        <bpmn2:errorEventDefinition id="_ErrorEventDefinition_5" />
+      </bpmn2:boundaryEvent>
+      <bpmn2:sequenceFlow id="equenceFlow_7" name="" sourceRef="BoundaryEvent_2" targetRef="ExclusiveGateway_3" />
+      <bpmn2:exclusiveGateway id="ExclusiveGateway_1" name="Activate Optional Features?">
+        <bpmn2:incoming>SequenceFlow_19</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_21</bpmn2:outgoing>
+        <bpmn2:outgoing>SequenceFlow_22</bpmn2:outgoing>
+      </bpmn2:exclusiveGateway>
+      <bpmn2:sequenceFlow id="SequenceFlow_21" name="yes" sourceRef="ExclusiveGateway_1" targetRef="activate_optional_features">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isActivateOptionalFeatures()==true}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:sequenceFlow id="SequenceFlow_22" name="no" sourceRef="ExclusiveGateway_1" targetRef="ExclusiveGateway_0p9h3k1">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isActivateOptionalFeatures()==false}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:serviceTask id="initiate_gps_position_check" name="Initiate GPS Position Check" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.InitiateGPSPositionCheckTask">
+        <bpmn2:incoming>SequenceFlow_1fnue4c</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_23</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_23" name="" sourceRef="initiate_gps_position_check" targetRef="gps_position_check_completion" />
+      <bpmn2:serviceTask id="activate_optional_features" name="Activate Optional Features" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.ActivateOptionalFeaturesTask">
+        <bpmn2:incoming>SequenceFlow_21</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_01envj9</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:intermediateCatchEvent id="gps_position_check_completion" name="Waiting for GPS Position&#10;&#10;&#10; Check Completion">
+        <bpmn2:extensionElements>
+          <camunda:executionListener class="com.ericsson.oss.services.ap.workflow.erbs.task.listener.integrate.GpsPositionCheckEndListener" event="end" />
+        </bpmn2:extensionElements>
+        <bpmn2:incoming>SequenceFlow_23</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_36</bpmn2:outgoing>
+        <bpmn2:messageEventDefinition id="_MessageEventDefinition_12" messageRef="Message_3" />
+      </bpmn2:intermediateCatchEvent>
+      <bpmn2:sequenceFlow id="SequenceFlow_36" name="" sourceRef="gps_position_check_completion" targetRef="ExclusiveGateway_3" />
+      <bpmn2:exclusiveGateway id="ExclusiveGateway_3" name="Unlock Cells Allowed?">
+        <bpmn2:incoming>equenceFlow_7</bpmn2:incoming>
+        <bpmn2:incoming>SequenceFlow_36</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_26</bpmn2:outgoing>
+        <bpmn2:outgoing>SequenceFlow_41</bpmn2:outgoing>
+      </bpmn2:exclusiveGateway>
+      <bpmn2:sequenceFlow id="SequenceFlow_26" name="yes" sourceRef="ExclusiveGateway_3" targetRef="unlock_cells">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isUnlockCells()==true &amp;&amp; execution.getVariable('s1_not_needed')==null &amp;&amp; WorkflowVariables.isGpsPositionCheckFailed()==false}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:sequenceFlow id="SequenceFlow_41" name="no" sourceRef="ExclusiveGateway_3" targetRef="set_integrate_complete">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isUnlockCells()==false || execution.getVariable('s1_not_needed')!=null || WorkflowVariables.isGpsPositionCheckFailed()==true}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:serviceTask id="create_cv_after_import" name="Create CV" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.CreateCvTask">
+        <bpmn2:incoming>SequenceFlow_32</bpmn2:incoming>
+        <bpmn2:incoming>SequenceFlow_28</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_19</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_19" name="" sourceRef="create_cv_after_import" targetRef="ExclusiveGateway_1" />
+      <bpmn2:serviceTask id="create_cv_after_integration" name="Create CV" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.CreateCvTask">
+        <bpmn2:incoming>SequenceFlow_5</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_14</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_14" name="" sourceRef="create_cv_after_integration" targetRef="ExclusiveGateway_4" />
+      <bpmn2:exclusiveGateway id="ExclusiveGateway_4" name="Upload CV After Integration?">
+        <bpmn2:incoming>SequenceFlow_14</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_33</bpmn2:outgoing>
+        <bpmn2:outgoing>SequenceFlow_16</bpmn2:outgoing>
+      </bpmn2:exclusiveGateway>
+      <bpmn2:sequenceFlow id="SequenceFlow_33" name="no" sourceRef="ExclusiveGateway_4" targetRef="Configure_Management_State_Normal">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isUploadCvAfterIntegrationEnabled()==false || WorkflowVariables.isCreateCvSuccessful()==false}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:sequenceFlow id="SequenceFlow_16" name="yes" sourceRef="ExclusiveGateway_4" targetRef="upload_cv_after_integration">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isUploadCvAfterIntegrationEnabled()==true &amp;&amp; WorkflowVariables.isCreateCvSuccessful()==true}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:exclusiveGateway id="create_cv" name="Create CV After Integration?">
+        <bpmn2:incoming>SequenceFlow_29</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_5</bpmn2:outgoing>
+        <bpmn2:outgoing>SequenceFlow_6</bpmn2:outgoing>
+      </bpmn2:exclusiveGateway>
+      <bpmn2:sequenceFlow id="SequenceFlow_5" name="yes&#10;" sourceRef="create_cv" targetRef="create_cv_after_integration">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.shouldCreateSecondCV()==true}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:sequenceFlow id="SequenceFlow_6" name="no&#10;" sourceRef="create_cv" targetRef="Configure_Management_State_Normal">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.shouldCreateSecondCV()==false}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:serviceTask id="unlock_cells" name="Unlock Cells" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.UnlockCellsTask">
+        <bpmn2:incoming>SequenceFlow_26</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_27</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_27" name="" sourceRef="unlock_cells" targetRef="set_integrate_complete" />
+      <bpmn2:serviceTask id="set_integrate_complete" name="Rbs Integration Complete" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.RbsIntegrationCompleteTask">
+        <bpmn2:incoming>SequenceFlow_27</bpmn2:incoming>
+        <bpmn2:incoming>SequenceFlow_41</bpmn2:incoming>
+        <bpmn2:incoming>SequenceFlow_0pg81uz</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_29</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_29" name="" sourceRef="set_integrate_complete" targetRef="create_cv" />
+      <bpmn2:endEvent id="IntegrationSuccess" name="Integration Completed">
+        <bpmn2:incoming>SequenceFlow_0sbvysj</bpmn2:incoming>
+        <bpmn2:messageEventDefinition id="_MessageEventDefinition_5" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.IntegrationSuccessTask" />
+      </bpmn2:endEvent>
+      <bpmn2:serviceTask id="upload_cv_after_integration" name="Initiate Upload CV" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.UploadCvTask">
+        <bpmn2:incoming>SequenceFlow_16</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_8</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_8" name="" sourceRef="upload_cv_after_integration" targetRef="Configure_Management_State_Normal" />
+      <bpmn2:sequenceFlow id="SequenceFlow_01envj9" sourceRef="activate_optional_features" targetRef="activate_optional_features_completion" />
+      <bpmn2:intermediateCatchEvent id="activate_optional_features_completion" name="Waiting for Activate Optional Features Completion">
+        <bpmn2:incoming>SequenceFlow_01envj9</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_0e667or</bpmn2:outgoing>
+        <bpmn2:messageEventDefinition messageRef="Message_0tsidz8" />
+      </bpmn2:intermediateCatchEvent>
+      <bpmn2:sequenceFlow id="SequenceFlow_0e667or" sourceRef="activate_optional_features_completion" targetRef="ExclusiveGateway_0p9h3k1" />
+      <bpmn2:exclusiveGateway id="ExclusiveGateway_0p9h3k1" name="GPS Position Check?">
+        <bpmn2:incoming>SequenceFlow_0e667or</bpmn2:incoming>
+        <bpmn2:incoming>SequenceFlow_22</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_1fnue4c</bpmn2:outgoing>
+        <bpmn2:outgoing>SequenceFlow_0pg81uz</bpmn2:outgoing>
+      </bpmn2:exclusiveGateway>
+      <bpmn2:sequenceFlow id="SequenceFlow_1fnue4c" name="yes" sourceRef="ExclusiveGateway_0p9h3k1" targetRef="initiate_gps_position_check">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${execution.getVariable('s1_not_needed')==null}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:sequenceFlow id="SequenceFlow_0pg81uz" name="no" sourceRef="ExclusiveGateway_0p9h3k1" targetRef="set_integrate_complete">
+        <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${execution.getVariable('s1_not_needed')!=null}</bpmn2:conditionExpression>
+      </bpmn2:sequenceFlow>
+      <bpmn2:sequenceFlow id="SequenceFlow_0xjk3qr" sourceRef="Configure_Management_State_Normal" targetRef="dhcp_remove_client_configuration" />
+      <bpmn2:serviceTask id="Configure_Management_State_Normal" name="Configure Management State" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.ConfigureManagementStateTask">
+        <bpmn2:extensionElements>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="managementState">NORMAL</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn2:extensionElements>
+        <bpmn2:incoming>SequenceFlow_8</bpmn2:incoming>
+        <bpmn2:incoming>SequenceFlow_33</bpmn2:incoming>
+        <bpmn2:incoming>SequenceFlow_6</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_0xjk3qr</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:serviceTask id="dhcp_remove_client_configuration" name="DHCP Remove Client Configuration" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.DhcpRemoveClientConfigurationTask">
+        <bpmn2:extensionElements>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="managementState">NORMAL</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn2:extensionElements>
+        <bpmn2:incoming>SequenceFlow_0xjk3qr</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_0sbvysj</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_0sbvysj" sourceRef="dhcp_remove_client_configuration" targetRef="IntegrationSuccess" />
+    </bpmn2:subProcess>
+  </bpmn2:process>
+  <bpmn2:message id="Message_1" name="S1_COMPLETE" />
+  <bpmn2:message id="Message_2" name="S1_NOT_NEEDED" />
+  <bpmn2:message id="Message_3" name="GPS_POSITION_CHECK_COMPLETE" />
+  <bpmn2:message id="Message_9" name="SITE_CONFIG_COMPLETE" />
+  <bpmn2:message id="Message_4" name="IMPORT_CONFIGURATIONS_COMPLETION" />
+  <bpmn2:error id="Error_1" name="INTEGRATION_FAIL" errorCode="INTEGRATION_FAIL" />
+  <bpmn2:message id="Message_0tsidz8" name="ACTIVATE_OPTIONAL_FEATURES_COMPLETION" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="AP Integrate ERbs Macro Node">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="integrate_erbs_d.1.44_4">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_29" bpmnElement="integrate_start_event">
+        <dc:Bounds x="300" y="322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="299" y="363" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_118" bpmnElement="initiate_import_configurations">
+        <dc:Bounds x="833" y="218" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_120" bpmnElement="activate_optional_features">
+        <dc:Bounds x="823" y="646" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_SubProcess_2" bpmnElement="SubProcess_1" isExpanded="true">
+        <dc:Bounds x="286" y="81" width="1629" height="1092" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_2" bpmnElement="ExclusiveGateway_1" isMarkerVisible="true">
+        <dc:Bounds x="717" y="661" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="701" y="627" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_21" bpmnElement="SequenceFlow_21" sourceElement="_BPMNShape_ExclusiveGateway_2" targetElement="_BPMNShape_ServiceTask_120">
+        <di:waypoint x="767" y="686" />
+        <di:waypoint x="823" y="687" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="777" y="686" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_4" bpmnElement="ExclusiveGateway_3" isMarkerVisible="true">
+        <dc:Bounds x="1467" y="661" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1469" y="632" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_125" bpmnElement="unlock_cells">
+        <dc:Bounds x="1698" y="647" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_26" bpmnElement="SequenceFlow_26" sourceElement="_BPMNShape_ExclusiveGateway_4" targetElement="_BPMNShape_ServiceTask_125">
+        <di:waypoint x="1517" y="686" />
+        <di:waypoint x="1698" y="687" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1659" y="687" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_126" bpmnElement="set_integrate_complete">
+        <dc:Bounds x="483" y="994" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_27" bpmnElement="SequenceFlow_27" sourceElement="_BPMNShape_ServiceTask_125" targetElement="_BPMNShape_ServiceTask_126">
+        <di:waypoint x="1748" y="727" />
+        <di:waypoint x="1748" y="857" />
+        <di:waypoint x="533" y="857" />
+        <di:waypoint x="533" y="994" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1594" y="622" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_5" bpmnElement="ExclusiveGateway_4" isMarkerVisible="true">
+        <dc:Bounds x="1149" y="1008" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1133" y="1063" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_29" bpmnElement="SequenceFlow_29" sourceElement="_BPMNShape_ServiceTask_126" targetElement="_BPMNShape_ExclusiveGateway_38">
+        <di:waypoint x="583" y="1033" />
+        <di:waypoint x="709" y="1032" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="490" y="865.5" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_127" bpmnElement="upload_cv_after_integration">
+        <dc:Bounds x="1358" y="993" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_49" bpmnElement="IntegrationSuccess">
+        <dc:Bounds x="1834" y="1016" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1784" y="995" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_33" bpmnElement="SequenceFlow_33" sourceElement="_BPMNShape_ExclusiveGateway_5" targetElement="ServiceTask_1vixek1_di">
+        <di:waypoint x="1174" y="1008" />
+        <di:waypoint x="1174" y="908" />
+        <di:waypoint x="1561" y="908" />
+        <di:waypoint x="1561" y="993" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1184" y="981" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_41" bpmnElement="SequenceFlow_41" sourceElement="_BPMNShape_ExclusiveGateway_4" targetElement="_BPMNShape_ServiceTask_126">
+        <di:waypoint x="1492" y="711" />
+        <di:waypoint x="1492" y="831" />
+        <di:waypoint x="374" y="831" />
+        <di:waypoint x="374" y="1034" />
+        <di:waypoint x="483" y="1034" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1511" y="715" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_38" bpmnElement="overall_integrate_start_event">
+        <dc:Bounds x="178" y="609" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="207" y="645" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_StartEvent_38" targetElement="_BPMNShape_SubProcess_2">
+        <di:waypoint x="214" y="627" />
+        <di:waypoint x="286" y="627" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="114" y="667" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_StartEvent_29" targetElement="_BPMNShape_ServiceTask_155">
+        <di:waypoint x="318" y="322" />
+        <di:waypoint x="318" y="258" />
+        <di:waypoint x="508" y="258" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="162" y="142" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_134" bpmnElement="create_cv_after_import">
+        <dc:Bounds x="541" y="646" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_135" bpmnElement="create_cv_after_integration">
+        <dc:Bounds x="932" y="993" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_14" bpmnElement="SequenceFlow_14" sourceElement="_BPMNShape_ServiceTask_135" targetElement="_BPMNShape_ExclusiveGateway_5">
+        <di:waypoint x="1032" y="1033" />
+        <di:waypoint x="1149" y="1033" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="909" y="881" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_16" bpmnElement="SequenceFlow_16" sourceElement="_BPMNShape_ExclusiveGateway_5" targetElement="_BPMNShape_ServiceTask_127">
+        <di:waypoint x="1199" y="1033" />
+        <di:waypoint x="1358" y="1033" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1206" y="1039" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_19" bpmnElement="SequenceFlow_19" sourceElement="_BPMNShape_ServiceTask_134" targetElement="_BPMNShape_ExclusiveGateway_2">
+        <di:waypoint x="641" y="687" />
+        <di:waypoint x="717" y="686" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="478" y="519.5" width="90" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateCatchEvent_30" bpmnElement="s1_complete">
+        <dc:Bounds x="1461" y="168" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1447" y="209" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EventBasedGateway_5" bpmnElement="wait_for_s1_complete_or_not_needed">
+        <dc:Bounds x="1350" y="232" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1292" y="202" width="78" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_10" bpmnElement="SequenceFlow_10" sourceElement="_BPMNShape_EventBasedGateway_5" targetElement="_BPMNShape_IntermediateCatchEvent_30">
+        <di:waypoint x="1375" y="232" />
+        <di:waypoint x="1375" y="186" />
+        <di:waypoint x="1461" y="186" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1234" y="57" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateCatchEvent_32" bpmnElement="s1_not_needed">
+        <dc:Bounds x="1461" y="298" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1441" y="339" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_12" bpmnElement="SequenceFlow_12" sourceElement="_BPMNShape_EventBasedGateway_5" targetElement="_BPMNShape_IntermediateCatchEvent_32">
+        <di:waypoint x="1375" y="282" />
+        <di:waypoint x="1375" y="316" />
+        <di:waypoint x="1461" y="316" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1234" y="147" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_153" bpmnElement="initiate_gps_position_check">
+        <dc:Bounds x="1161" y="646" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateCatchEvent_37" bpmnElement="gps_position_check_completion">
+        <dc:Bounds x="1335" y="669" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1309" y="621" width="90" height="66" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_23" bpmnElement="SequenceFlow_23" sourceElement="_BPMNShape_ServiceTask_153" targetElement="_BPMNShape_IntermediateCatchEvent_37">
+        <di:waypoint x="1261" y="686" />
+        <di:waypoint x="1296" y="686" />
+        <di:waypoint x="1312" y="686" />
+        <di:waypoint x="1335" y="687" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1014" y="536" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_BoundaryEvent_36" bpmnElement="BoundaryEvent_2">
+        <dc:Bounds x="1180" y="708" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1042" y="597" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_155" bpmnElement="initiate_node_synchronization">
+        <dc:Bounds x="508" y="218" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateCatchEvent_38" bpmnElement="site_config_complete">
+        <dc:Bounds x="708" y="239" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="699" y="280" width="55" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_25" bpmnElement="SequenceFlow_25" sourceElement="_BPMNShape_ServiceTask_155" targetElement="_BPMNShape_IntermediateCatchEvent_38">
+        <di:waypoint x="608" y="258" />
+        <di:waypoint x="708" y="257" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="473" y="106" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_38" bpmnElement="create_cv" isMarkerVisible="true">
+        <dc:Bounds x="709" y="1007" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="687" y="976" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_5" sourceElement="_BPMNShape_ExclusiveGateway_38" targetElement="_BPMNShape_ServiceTask_135">
+        <di:waypoint x="759" y="1032" />
+        <di:waypoint x="932" y="1033" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="770" y="1011" width="17" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_6" sourceElement="_BPMNShape_ExclusiveGateway_38" targetElement="ServiceTask_1vixek1_di">
+        <di:waypoint x="734" y="1057" />
+        <di:waypoint x="734" y="1131" />
+        <di:waypoint x="1561" y="1131" />
+        <di:waypoint x="1561" y="1073" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="743" y="1058" width="13" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="equenceFlow_7" sourceElement="_BPMNShape_BoundaryEvent_36" targetElement="_BPMNShape_ExclusiveGateway_4">
+        <di:waypoint x="1198" y="744" />
+        <di:waypoint x="1198" y="774" />
+        <di:waypoint x="1408" y="773" />
+        <di:waypoint x="1408" y="685" />
+        <di:waypoint x="1467" y="686" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1198" y="620" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_36" bpmnElement="SequenceFlow_36" sourceElement="_BPMNShape_IntermediateCatchEvent_37" targetElement="_BPMNShape_ExclusiveGateway_4">
+        <di:waypoint x="1371" y="687" />
+        <di:waypoint x="1467" y="686" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1563" y="533" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_39" bpmnElement="SequenceFlow_39" sourceElement="_BPMNShape_IntermediateCatchEvent_38" targetElement="_BPMNShape_ServiceTask_118">
+        <di:waypoint x="744" y="257" />
+        <di:waypoint x="833" y="258" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="606" y="105" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateCatchEvent_39" bpmnElement="wait_for_import_config_complete">
+        <dc:Bounds x="1032" y="241" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1008" y="282" width="87" height="66" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_13" bpmnElement="SequenceFlow_7" sourceElement="_BPMNShape_ServiceTask_118" targetElement="_BPMNShape_IntermediateCatchEvent_39">
+        <di:waypoint x="933" y="258" />
+        <di:waypoint x="1032" y="259" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="802" y="106" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_39" bpmnElement="ExclusiveGateway_6" isMarkerVisible="true">
+        <dc:Bounds x="1198" y="233" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1189" y="185" width="72" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_17" bpmnElement="SequenceFlow_13" sourceElement="_BPMNShape_IntermediateCatchEvent_39" targetElement="_BPMNShape_ExclusiveGateway_39">
+        <di:waypoint x="1068" y="259" />
+        <di:waypoint x="1198" y="258" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="937" y="107" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_18" bpmnElement="SequenceFlow_17" sourceElement="_BPMNShape_ExclusiveGateway_39" targetElement="_BPMNShape_EventBasedGateway_5">
+        <di:waypoint x="1248" y="258" />
+        <di:waypoint x="1350" y="257" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1268" y="258" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_65" bpmnElement="import_failed_end_event">
+        <dc:Bounds x="1206" y="322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1189" y="363" width="72" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_34" bpmnElement="SequenceFlow_32" sourceElement="_BPMNShape_Task_3" targetElement="_BPMNShape_ServiceTask_134">
+        <di:waypoint x="454" y="686" />
+        <di:waypoint x="541" y="686" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="296.5" y="519" width="90" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_35" bpmnElement="SequenceFlow_34" sourceElement="_BPMNShape_ExclusiveGateway_39" targetElement="_BPMNShape_EndEvent_65">
+        <di:waypoint x="1223" y="283" />
+        <di:waypoint x="1224" y="322" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1202" y="285" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_24" bpmnElement="SequenceFlow_22" sourceElement="_BPMNShape_ExclusiveGateway_2" targetElement="ExclusiveGateway_0p9h3k1_di">
+        <di:waypoint x="742" y="661" />
+        <di:waypoint x="742" y="597" />
+        <di:waypoint x="1084" y="597" />
+        <di:waypoint x="1084" y="661" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="750" y="637" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_Task_3" bpmnElement="enable_supervision">
+        <dc:Bounds x="354" y="646" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_41" bpmnElement="ExclusiveGateway_7" isMarkerVisible="true">
+        <dc:Bounds x="1653" y="230" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1649" y="200" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_11" bpmnElement="SequenceFlow_11" sourceElement="_BPMNShape_IntermediateCatchEvent_30" targetElement="_BPMNShape_ExclusiveGateway_41">
+        <di:waypoint x="1497" y="186" />
+        <di:waypoint x="1578" y="186" />
+        <di:waypoint x="1578" y="255" />
+        <di:waypoint x="1653" y="255" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1437" y="68.5" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_15" bpmnElement="SequenceFlow_15" sourceElement="_BPMNShape_ExclusiveGateway_41" targetElement="_BPMNShape_Task_3">
+        <di:waypoint x="1678" y="280" />
+        <di:waypoint x="1678" y="527" />
+        <di:waypoint x="404" y="527" />
+        <di:waypoint x="404" y="646" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1653" y="282" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_28" bpmnElement="SequenceFlow_24" sourceElement="_BPMNShape_IntermediateCatchEvent_32" targetElement="_BPMNShape_ExclusiveGateway_41">
+        <di:waypoint x="1497" y="316" />
+        <di:waypoint x="1582" y="316" />
+        <di:waypoint x="1582" y="255" />
+        <di:waypoint x="1653" y="255" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1441" y="133.5" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_30" bpmnElement="SequenceFlow_28" sourceElement="_BPMNShape_ExclusiveGateway_41" targetElement="_BPMNShape_ServiceTask_134">
+        <di:waypoint x="1702" y="254" />
+        <di:waypoint x="1750" y="253" />
+        <di:waypoint x="1750" y="579" />
+        <di:waypoint x="591" y="579" />
+        <di:waypoint x="591" y="646" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1730" y="261" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_8" bpmnElement="SequenceFlow_8" sourceElement="_BPMNShape_ServiceTask_127" targetElement="ServiceTask_1vixek1_di">
+        <di:waypoint x="1458" y="1033" />
+        <di:waypoint x="1511" y="1033" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1283.5" y="866" width="90" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_01envj9_di" bpmnElement="SequenceFlow_01envj9">
+        <di:waypoint x="923" y="686" />
+        <di:waypoint x="972" y="687" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="746.5" y="519.5" width="90" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_0p1mdpz_di" bpmnElement="activate_optional_features_completion">
+        <dc:Bounds x="972" y="669" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="949" y="603" width="83" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0e667or_di" bpmnElement="SequenceFlow_0e667or">
+        <di:waypoint x="1008" y="687" />
+        <di:waypoint x="1059" y="686" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="832.5" y="519.5" width="90" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0p9h3k1_di" bpmnElement="ExclusiveGateway_0p9h3k1" isMarkerVisible="true">
+        <dc:Bounds x="1059" y="661" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1053" y="715" width="66" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1fnue4c_di" bpmnElement="SequenceFlow_1fnue4c">
+        <di:waypoint x="1109" y="686" />
+        <di:waypoint x="1161" y="686" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1127" y="665" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0pg81uz_di" bpmnElement="SequenceFlow_0pg81uz">
+        <di:waypoint x="1084" y="711" />
+        <di:waypoint x="1084" y="772" />
+        <di:waypoint x="329" y="772" />
+        <di:waypoint x="329" y="1147" />
+        <di:waypoint x="533" y="1147" />
+        <di:waypoint x="533" y="1075" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1063" y="748" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0xjk3qr_di" bpmnElement="SequenceFlow_0xjk3qr">
+        <di:waypoint x="1611" y="1033" />
+        <di:waypoint x="1661" y="1033" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1508.5" y="860" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1vixek1_di" bpmnElement="Configure_Management_State_Normal">
+        <dc:Bounds x="1511" y="993" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1injulf_di" bpmnElement="dhcp_remove_client_configuration">
+        <dc:Bounds x="1661" y="993" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0sbvysj_di" bpmnElement="SequenceFlow_0sbvysj">
+        <di:waypoint x="1761" y="1034" />
+        <di:waypoint x="1723" y="1034" />
+        <di:waypoint x="1834" y="1034" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

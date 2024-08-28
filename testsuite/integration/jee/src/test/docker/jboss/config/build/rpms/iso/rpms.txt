@@ -1,0 +1,7 @@
+#--------------------------------------------
+# AP external dependencies to be taken from   
+# the latest KGB ISO.
+#
+# Dependencies here are specific to ap-workflow-macro
+#--------------------------------------------
+ERICwfsjee2_CXP9037941:3.2.3

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.ericsson.oss.autoprovisioning.macro</groupId>
+        <artifactId>ap-workflow-macro</artifactId>
+        <version>1.130.17-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+    <artifactId>ERICapworkflowmacro_CXP9030538</artifactId>
+    <packaging>${rpm.packaging}</packaging>
+    <name>[${project.parent.artifactId}] CXP module</name>
+
+    <properties>
+        <install-path>${project.artifactId}</install-path>
+        <media.category>service</media.category>
+        <publish_artifact>true</publish_artifact>
+    </properties>
+
+    <dependencies>
+        <!-- AP Dependencies -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ap-workflow-cpp-ear</artifactId>
+            <type>ear</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ap-workflow-erbs-war</artifactId>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-ap-workflow-macro</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <!-- Unpack erbs schemas and schemas -->
+                                <artifactItem>
+                                    <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+                                    <artifactId>ap-data-model-cpp-schema</artifactId>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target/cpp-schemas</outputDirectory>
+                                    <classifier>xml</classifier>
+                                    <type>zip</type>
+                                </artifactItem>
+                                <!-- Unpack ap view erbs CLI metadata -->
+                                <artifactItem>
+                                    <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+                                    <artifactId>ap-model-metadata-cli-cpp</artifactId>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target/metadata-cli-cpp</outputDirectory>
+                                    <classifier>xml</classifier>
+                                    <type>zip</type>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>rpm-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <properties combine.self="override" />
+                    <copyright>2014 Ericsson AB All rights reserved</copyright>
+                    <mappings>
+                        <!-- Copy schemas and samples to local AP directory -->
+                        <mapping>
+                            <directory>/opt/ericsson/autoprovisioning/artifacts/</directory>
+                            <filemode>775</filemode>
+                            <username>root</username>
+                            <groupname>root</groupname>
+                            <configuration>false</configuration>
+                            <directoryIncluded>true</directoryIncluded>
+                            <recurseDirectories>true</recurseDirectories>
+                            <sources>
+                                <source>
+                                    <location>target/cpp-schemas</location>
+                                </source>
+                            </sources>
+                        </mapping>
+                        <!-- Copy ap view CLI metadata to local AP directory -->
+                        <mapping>
+                            <directory>/opt/ericsson/autoprovisioning</directory>
+                            <filemode>775</filemode>
+                            <username>root</username>
+                            <groupname>root</groupname>
+                            <configuration>false</configuration>
+                            <directoryIncluded>true</directoryIncluded>
+                            <recurseDirectories>true</recurseDirectories>
+                            <dependency>
+                                <excludes>
+                                    <exclude>${project.groupId}:ap-workflow-cpp-ear</exclude>
+                                    <exclude>${project.groupId}:ap-workflow-erbs-war</exclude>
+                                </excludes>
+                            </dependency>
+                            <sources>
+                                <source>
+                                    <location>target/metadata-cli-cpp</location>
+                                </source>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>${vm.install-path}</directory>
+                            <filemode>500</filemode>
+                            <username>${jboss-username}</username>
+                            <groupname>${jboss-groupname}</groupname>
+                            <directoryIncluded>false</directoryIncluded>
+                            <recurseDirectories>false</recurseDirectories>
+                            <dependency>
+                                <includes>
+                                    <!-- Update for WAR/RAR as needed -->
+                                    <include>${project.groupId}:ap-workflow-cpp-ear</include>
+                                    <include>${project.groupId}:ap-workflow-erbs-war</include>
+                                </includes>
+                            </dependency>
+                        </mapping>
+                    </mappings>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${version.owasp.dependency.check}</version>
+                <configuration>
+                    <skipProvidedScope>true</skipProvidedScope>
+                    <skipRuntimeScope>true</skipRuntimeScope>
+                    <failBuildOnCVSS>10</failBuildOnCVSS>
+                    <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

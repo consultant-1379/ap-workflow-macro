@@ -1,0 +1,33 @@
+# Compiled source #
+*/bin/*
+
+# InteliJ files #
+worskpace.xml
+.idea/
+*.iml
+
+# Eclipse files
+.project
+.classpath
+.settings
+
+# Packages
+*.jar
+
+# Maven build files
+target
+reports
+# ARQ tests
+arq-perf
+
+# PMD
+.pmd
+
+#Generated files
+*.ser
+
+# Merge files
+*.orig
+
+testsuite/integration/jee/bin/
+testsuite/integration/jee/test-output/

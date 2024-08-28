@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="_1WRtQLZZEeOB_6VZyZ5Ieg" targetNamespace="http://camunda.org/schema/1.0/bpmn" exporter="Camunda Modeler" exporterVersion="3.1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:process id="auto_integrate_erbs_d.1.44_4" name="AutoProvisioning-Erbs-Overall" isExecutable="true">
+    <bpmn2:callActivity id="order_integration" name="Order Integration" camunda:async="true" calledElement="order_erbs_d.1.44_4">
+      <bpmn2:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:out variables="all" />
+        <camunda:in variables="all" />
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_15</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
+    </bpmn2:callActivity>
+    <bpmn2:sequenceFlow id="SequenceFlow_2" name="" sourceRef="order_integration" targetRef="order_successful" />
+    <bpmn2:exclusiveGateway id="order_successful" name=" Order Integration Successful ?">
+      <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_10</bpmn2:outgoing>
+      <bpmn2:outgoing>SequenceFlow_28</bpmn2:outgoing>
+      <bpmn2:outgoing>SequenceFlow_12</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="SequenceFlow_10" name="Order Failed and Rollback Failed" sourceRef="order_successful" targetRef="order_failed_and_rollback_failed">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isOrderSuccessful()==false &amp;&amp; WorkflowVariables.isUnorderOrRollbackError()==true}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="SequenceFlow_28" name="Order Failed and Rollback Successfully" sourceRef="order_successful" targetRef="order_failed_and_rollback_successful">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isOrderSuccessful()==false &amp;&amp; WorkflowVariables.isUnorderOrRollbackError()==false}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="SequenceFlow_12" name="Order Successful" sourceRef="order_successful" targetRef="wait_for_nodeup">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${WorkflowVariables.isOrderSuccessful()==true}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:endEvent id="auto_integration_sucessful" name="Auto Integration Successful">
+      <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:endEvent id="auto_integration_failed" name="Auto Integration Failed">
+      <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
+      <bpmn2:messageEventDefinition id="MessageEventDefinition_7" camunda:class="com.ericsson.oss.services.ap.common.workflow.task.integrate.IntegrationFailedTask" />
+    </bpmn2:endEvent>
+    <bpmn2:startEvent id="start_event" name="Auto Integration Started">
+      <bpmn2:outgoing>SequenceFlow_15</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_15" name="" sourceRef="start_event" targetRef="order_integration" />
+    <bpmn2:endEvent id="order_failed_and_rollback_failed" name="Order Failed and Rollback Failed">
+      <bpmn2:incoming>SequenceFlow_10</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:endEvent id="order_failed_and_rollback_successful" name="Order Failed and Rollback Successful">
+      <bpmn2:incoming>SequenceFlow_28</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:callActivity id="integrate_erbs_d.1.44_4" name="Integrate" camunda:async="true" calledElement="integrate_erbs_d.1.44_4">
+      <bpmn2:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_11</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+    </bpmn2:callActivity>
+    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="integrate_erbs_d.1.44_4" targetRef="auto_integration_sucessful" />
+    <bpmn2:subProcess id="hardwareBindSubprocess" name="Hardware Bind" triggeredByEvent="true">
+      <bpmn2:startEvent id="startBind" name="Receive Bind Request" isInterrupting="false">
+        <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
+        <bpmn2:messageEventDefinition id="MessageEventDefinition_1" messageRef="Message_4" />
+      </bpmn2:startEvent>
+      <bpmn2:serviceTask id="hardwareBind" name="Hardware Bind" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.integrate.BindTask">
+        <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_6</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_1" name="" sourceRef="startBind" targetRef="hardwareBind" />
+      <bpmn2:sequenceFlow id="SequenceFlow_6" name="" sourceRef="hardwareBind" targetRef="ServiceTask_1k2owdu" />
+      <bpmn2:endEvent id="bindCompleted" name="Bind Completed">
+        <bpmn2:incoming>SequenceFlow_0l39obm</bpmn2:incoming>
+      </bpmn2:endEvent>
+      <bpmn2:serviceTask id="ServiceTask_1k2owdu" name="DHCP Configuration" camunda:class="com.ericsson.oss.services.ap.workflow.erbs.task.order.DhcpConfigurationTask">
+        <bpmn2:incoming>SequenceFlow_6</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_0l39obm</bpmn2:outgoing>
+      </bpmn2:serviceTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_0l39obm" sourceRef="ServiceTask_1k2owdu" targetRef="bindCompleted" />
+    </bpmn2:subProcess>
+    <bpmn2:boundaryEvent id="BoundaryEvent_1" name="" attachedToRef="integrate_erbs_d.1.44_4">
+      <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
+      <bpmn2:errorEventDefinition id="ErrorEventDefinition_1" errorRef="Error_1" />
+    </bpmn2:boundaryEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_4" name="" sourceRef="BoundaryEvent_1" targetRef="auto_integration_failed" />
+    <bpmn2:intermediateCatchEvent id="wait_for_nodeup" name="Waiting for Node Up">
+      <bpmn2:extensionElements>
+        <camunda:executionListener class="com.ericsson.oss.services.ap.common.workflow.task.listener.NodeUpStartListener" event="start" />
+        <camunda:executionListener class="com.ericsson.oss.services.ap.common.workflow.task.listener.NodeUpEndListener" event="end" />
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_12</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_11</bpmn2:outgoing>
+      <bpmn2:messageEventDefinition id="MessageEventDefinition_4" messageRef="Message_5" />
+    </bpmn2:intermediateCatchEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_11" name="" sourceRef="wait_for_nodeup" targetRef="integrate_erbs_d.1.44_4" />
+  </bpmn2:process>
+  <bpmn2:signal id="Signal_1" name="ORDER_FAILED" />
+  <bpmn2:error id="Error_4" name="ORDER_FAIL" errorCode="ORDER_FAIL" />
+  <bpmn2:signal id="Signal_2" name="ORDER_ROLLBACK" />
+  <bpmn2:message id="Message_1" name="UNORDER_INTEGRATION" />
+  <bpmn2:message id="Message_2" name="SITE_CONFIG_COMPLETE" />
+  <bpmn2:message id="Message_3" name="SYNCHRONIZED" />
+  <bpmn2:message id="Message_5" name="NODE_UP" />
+  <bpmn2:message id="Message_4" name="BIND" />
+  <bpmn2:error id="Error_1" name="INTEGRATION_FAIL" errorCode="INTEGRATION_FAIL" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="auto_integrate_erbs_d.1.44_4">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_15" bpmnElement="start_event">
+        <dc:Bounds x="176" y="270" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="156" y="311" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_CallActivity_2" bpmnElement="order_integration" isExpanded="true">
+        <dc:Bounds x="320" y="240" width="157" height="96" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_CallActivity_3" bpmnElement="integrate_erbs_d.1.44_4" isExpanded="true">
+        <dc:Bounds x="1162" y="45" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_12" bpmnElement="auto_integration_sucessful">
+        <dc:Bounds x="1532" y="67" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1512" y="108" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_CallActivity_3" targetElement="_BPMNShape_EndEvent_12">
+        <di:waypoint x="1262" y="85" />
+        <di:waypoint x="1532" y="85" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1305" y="70" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_BoundaryEvent_24" bpmnElement="BoundaryEvent_1">
+        <dc:Bounds x="1220" y="107" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1146" y="148" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_55" bpmnElement="auto_integration_failed">
+        <dc:Bounds x="1532" y="177" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1512" y="218" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_61" bpmnElement="order_failed_and_rollback_successful">
+        <dc:Bounds x="1532" y="405" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1509" y="446" width="83" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_15" bpmnElement="order_successful" isMarkerVisible="true">
+        <dc:Bounds x="560" y="262" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="498" y="241" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_CallActivity_2" targetElement="_BPMNShape_ExclusiveGateway_15">
+        <di:waypoint x="476" y="288" />
+        <di:waypoint x="560" y="287" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="423" y="288" width="6" height="6" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_10" bpmnElement="SequenceFlow_10" sourceElement="_BPMNShape_ExclusiveGateway_15" targetElement="_BPMNShape_EndEvent_63">
+        <di:waypoint x="610" y="287" />
+        <di:waypoint x="1532" y="288" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="619" y="255" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_63" bpmnElement="order_failed_and_rollback_failed">
+        <dc:Bounds x="1532" y="270" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1509" y="311" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_28" bpmnElement="SequenceFlow_28" sourceElement="_BPMNShape_ExclusiveGateway_15" targetElement="_BPMNShape_EndEvent_61">
+        <di:waypoint x="585" y="312" />
+        <di:waypoint x="586" y="423" />
+        <di:waypoint x="1532" y="423" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="615" y="376" width="83" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateCatchEvent_27" bpmnElement="wait_for_nodeup">
+        <dc:Bounds x="872" y="67" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="850" y="108" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_BoundaryEvent_24" targetElement="_BPMNShape_EndEvent_55">
+        <di:waypoint x="1238" y="143" />
+        <di:waypoint x="1238" y="195" />
+        <di:waypoint x="1532" y="195" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1161" y="169" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_12" bpmnElement="SequenceFlow_12" sourceElement="_BPMNShape_ExclusiveGateway_15" targetElement="_BPMNShape_IntermediateCatchEvent_27">
+        <di:waypoint x="585" y="262" />
+        <di:waypoint x="585" y="85" />
+        <di:waypoint x="872" y="85" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="631" y="57" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_15" bpmnElement="SequenceFlow_15" sourceElement="_BPMNShape_StartEvent_15" targetElement="_BPMNShape_CallActivity_2">
+        <di:waypoint x="212" y="288" />
+        <di:waypoint x="320" y="288" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="133" y="288" width="6" height="6" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_SubProcess_3" bpmnElement="hardwareBindSubprocess" isExpanded="true">
+        <dc:Bounds x="691" y="473" width="626" height="225" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_39" bpmnElement="startBind">
+        <dc:Bounds x="779" y="606" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="765" y="647" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_138" bpmnElement="hardwareBind">
+        <dc:Bounds x="872" y="588" width="102" height="73" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_64" bpmnElement="bindCompleted">
+        <dc:Bounds x="1155" y="606" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1134" y="647" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_StartEvent_39" targetElement="_BPMNShape_ServiceTask_138">
+        <di:waypoint x="815" y="624" />
+        <di:waypoint x="872" y="624" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="794" y="608.5" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_6" sourceElement="_BPMNShape_ServiceTask_138" targetElement="ServiceTask_1k2owdu_di">
+        <di:waypoint x="974" y="623" />
+        <di:waypoint x="1015" y="623" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1015" y="608.5" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_11" bpmnElement="SequenceFlow_11" sourceElement="_BPMNShape_IntermediateCatchEvent_27" targetElement="_BPMNShape_CallActivity_3">
+        <di:waypoint x="908" y="85" />
+        <di:waypoint x="1162" y="85" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="943" y="70" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1k2owdu_di" bpmnElement="ServiceTask_1k2owdu">
+        <dc:Bounds x="1015" y="583" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0l39obm_di" bpmnElement="SequenceFlow_0l39obm">
+        <di:waypoint x="1115" y="624" />
+        <di:waypoint x="1155" y="624" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

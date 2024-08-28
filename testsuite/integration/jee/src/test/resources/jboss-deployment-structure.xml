@@ -1,0 +1,34 @@
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+    <deployment>
+        <dependencies>
+            <module name="com.sun.xml.bind" export="true" />
+            <module name="javax.xml.bind.api" export="true" />
+            <module name="org.apache.xerces" />
+            <module name="org.apache.commons.beanutils" export="true"/>
+            <module name="org.apache.commons.cli" export="true"/>
+            <module name="org.apache.commons.lang" export="true"/>
+            <module name="org.apache.commons.codec" export="true"/>
+            <module name="org.apache.tika" export="true"/>
+            <module name="org.aspectj" export="true"/>
+            <module name="org.jaxb2" export="true"/>
+            <module name="org.jboss.remoting3" slot="main" />
+            <module name="org.jboss.resteasy.resteasy-jaxrs" export="true"/>
+            <module name="org.jboss.resteasy.resteasy-multipart-provider" export="true"/>
+            <module name="org.jboss.xnio" slot="main" />
+            <module name="org.junit" export="true"/>
+            <module name="org.mockito" export="true"/>
+            <module name="org.slf4j" />
+            <module name="com.google.guava" export="true"/>
+            <module name="com.ericsson.oss.itpf.datalayer.dps.api" export="true" />
+            <module name="com.ericsson.oss.itpf.datalayer.dps.delegate.api" export="true" />
+            <module name="com.ericsson.oss.itpf.modeling.modelservice.api" slot="main" meta-inf="import"/>
+            <module name="com.ericsson.oss.itpf.sdk.service-framework" slot="4.x" export="true" />
+            <module name="com.ericsson.oss.services.autoprovisioning.api" export="true" />
+            <module name="com.ericsson.oss.services.wfs.api" export="true" />
+            <module name="com.ericsson.oss.mediation.engine-api" export="true" />
+            <module name="com.github.cukespace" export="true"/>
+            <module name="com.googlecode.catchexception" export="true"/>
+            <module name="ru.yandex.qatools.allure" export="true"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>

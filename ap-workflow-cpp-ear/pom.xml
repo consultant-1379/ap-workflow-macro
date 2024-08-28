@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.ericsson.oss.autoprovisioning.macro</groupId>
+        <artifactId>ap-workflow-macro</artifactId>
+        <version>1.130.17-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.ericsson.oss.services.autoprovisioning</groupId>
+    <artifactId>ap-workflow-cpp-ear</artifactId>
+    <packaging>ear</packaging>
+    <name>[${project.parent.artifactId}] CPP EAR module</name>
+
+    <dependencies>
+        <!-- AP Dependencies -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ap-workflow-cpp-ejb</artifactId>
+            <version>${project.version}</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ap-workflow-cpp-jar</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ap-workflow-erbs-jar</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <outputDirectory>${project.parent.artifactId}-${project.version}</outputDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <version>${version.jee}</version>
+                    <workDirectory>target/${project.parent.artifactId}-${project.version}</workDirectory>
+                    <defaultLibBundleDir>${project.ear.defaultLibBundleDir}</defaultLibBundleDir>
+                    <description>${project.parent.artifactId} JEE8 service</description>
+                    <displayName>${project.parent.artifactId} JEE8 service</displayName>
+                    <archive>
+                        <manifestEntries>
+                            <Dependencies>com.ericsson.oss.services.autoprovisioning.api annotations,
+                                com.ericsson.oss.services.wfs.api,
+                                com.ericsson.oss.itpf.datalayer.dps.api,
+                                org.apache.commons.cli, org.apache.commons.lang, com.ericsson.oss.itpf.security.cryptography.impl meta-inf export</Dependencies>
+                        </manifestEntries>
+                    </archive>
+                    <modules>
+                        <jarModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ap-workflow-cpp-jar</artifactId>
+                        </jarModule>
+                        <jarModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ap-workflow-erbs-jar</artifactId>
+                        </jarModule>
+                        <ejbModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ap-workflow-cpp-ejb</artifactId>
+                        </ejbModule>
+                    </modules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>production_env</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <!-- All production-ready dependencies to Service Framework implementation modules should go here. These are LITP specific -->
+            </dependencies>
+        </profile>
+    </profiles>
+</project>

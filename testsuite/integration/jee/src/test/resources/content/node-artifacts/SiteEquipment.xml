@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ProductNumber  = 'CXC 173 3299/7'       R-State  = 'R8A'
+
+DocumentNumber = '4/006 91-CSH 103 22'
+
+Node version: M12B
+
+
+
+File    : SiteEquipment_3SectorMimo.xml
+
+Purpose : Example for Site Equipment, RBS6201v2, 3 Sector, 3 Rul, 1 Dul, 3 AntennaUnitGroup with a dual TMA anda RET in each
+
+
+
+Modified: March 13 2012
+
+-->
+<SiteEquipment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="4_15519-CSH10322.xsd">
+  <Format revision="M"/>
+  <NodeData site="DOON21"/>
+  <CommonSupportSystem supportSystemControl="TRUE" cabinetType="RBS6201v2">
+    <HwUnit unitType="PSU-1">
+      <EcPort ecPortId="1" hubPosition="A3"/>
+    </HwUnit>
+    <HwUnit unitType="PSU-2">
+      <EcPort ecPortId="1" hubPosition="B3"/>
+    </HwUnit>
+    <HwUnit unitType="PDU-1">
+      <EcPort ecPortId="1" hubPosition="A2"/>
+    </HwUnit>
+    <HwUnit unitType="BFU-1">
+      <EcPort ecPortId="1" hubPosition="B5"/>
+    </HwUnit>
+    <HwUnit unitType="SAU-1">
+      <EcPort ecPortId="1" hubPosition="A5"/>
+    </HwUnit>
+    <HwUnit unitType="SCU-1">
+      <EcPort ecPortId="1" hubPosition="A4"/>
+    </HwUnit>
+    <PlugInUnit unitId="DU-1">
+      <EcPort ecPortId="1" hubPosition="B1"/>
+    </PlugInUnit>
+  </CommonSupportSystem>
+  <SectorEquipment sectorFunctionId="1">
+    <RadioEquipment>
+      <RadioUnit unitId="RU-1-1" primaryPort="DU-1-A"/>
+      <RadioUnit unitId="RU-1-2" primaryPort="DU-1-D"/>
+    </RadioEquipment>
+    <AntennaEquipment>
+      <RfBranchRef rfBranchId="1-1"/>
+      <RfBranchRef rfBranchId="1-2"/>
+    </AntennaEquipment>
+  </SectorEquipment>
+  <SectorEquipment sectorFunctionId="2">
+    <RadioEquipment>
+      <RadioUnit unitId="RU-1-3" primaryPort="DU-1-B"/>
+      <RadioUnit unitId="RU-1-4" primaryPort="DU-1-E"/>
+    </RadioEquipment>
+    <AntennaEquipment>
+      <RfBranchRef rfBranchId="2-1"/>
+      <RfBranchRef rfBranchId="2-2"/>
+    </AntennaEquipment>
+  </SectorEquipment>
+  <SectorEquipment sectorFunctionId="3">
+    <RadioEquipment>
+      <RadioUnit unitId="RU-1-5" primaryPort="DU-1-C"/>
+      <RadioUnit unitId="RU-1-6" primaryPort="DU-1-F"/>
+    </RadioEquipment>
+    <AntennaEquipment>
+      <RfBranchRef rfBranchId="3-1"/>
+      <RfBranchRef rfBranchId="3-2"/>
+    </AntennaEquipment>
+  </SectorEquipment>
+<CommonAntennaSystem>
+		<AntennaUnitGroup antennaUnitGroupId="1">
+			<AntennaUnit antennaUnitId="1" mechanicalAntennaTilt="2">
+				<AntennaSubunit antennaSubunitId="1" minTotalTilt="-100" maxTotalTilt="100">
+					<AuPort auPortId="1"></AuPort>
+					<AuPort auPortId="2"></AuPort>
+				</AntennaSubunit>
+			</AntennaUnit>
+			<RfBranch rfBranchId="1" rfPortRef="RU-1-1-A" dlAttenuation="2" ulAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2">
+        <AuPortRef auPortId="1-1-1"></AuPortRef>
+			</RfBranch>
+			<RfBranch rfBranchId="2" rfPortRef="RU-1-2-A" dlAttenuation="2" ulAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2">
+				<AuPortRef auPortId="1-1-2"></AuPortRef>
+			</RfBranch>
+			<AntennaNearUnit antennaNearUnitId="1" rfPortRef="RU-1-1-A" anuType="IUANT" iuantDeviceType="2">
+				<TmaSubUnit tmaSubUnitId="1" rfBranchRef="1" dlAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2"></TmaSubUnit>
+        <TmaSubUnit tmaSubUnitId="2" rfBranchRef="2" dlAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2"></TmaSubUnit>
+			</AntennaNearUnit>
+			<AntennaNearUnit antennaNearUnitId="2" rfPortRef="RU-1-1-A" anuType="IUANT" iuantDeviceType="1">
+				<RetSubUnit retSubUnitId="1" antennaSubunitRef="1-1" electricalAntennaTilt="2"></RetSubUnit>
+			</AntennaNearUnit>
+		</AntennaUnitGroup>
+    <AntennaUnitGroup antennaUnitGroupId="2">
+    <AntennaUnit antennaUnitId="1" mechanicalAntennaTilt="2">
+      <AntennaSubunit antennaSubunitId="1" minTotalTilt="-100" maxTotalTilt="100">
+					<AuPort auPortId="1"></AuPort>
+					<AuPort auPortId="2"></AuPort>
+				</AntennaSubunit>
+			</AntennaUnit>
+			<RfBranch rfBranchId="1" rfPortRef="RU-1-3-A" dlAttenuation="2" ulAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2">
+				<AuPortRef auPortId="1-1-1"></AuPortRef>
+			</RfBranch>
+			<RfBranch rfBranchId="2" rfPortRef="RU-1-4-A" dlAttenuation="2" ulAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2">
+				<AuPortRef auPortId="1-1-2"></AuPortRef>
+			</RfBranch>
+			<AntennaNearUnit antennaNearUnitId="1" rfPortRef="RU-1-3-A" anuType="IUANT" iuantDeviceType="2">
+				<TmaSubUnit tmaSubUnitId="1" rfBranchRef="1" dlAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2"></TmaSubUnit>
+        <TmaSubUnit tmaSubUnitId="2" rfBranchRef="2" dlAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2"></TmaSubUnit>
+			</AntennaNearUnit>
+			<AntennaNearUnit antennaNearUnitId="2" rfPortRef="RU-1-3-A" anuType="IUANT" iuantDeviceType="1">
+				<RetSubUnit retSubUnitId="1" antennaSubunitRef="1-1" electricalAntennaTilt="2"></RetSubUnit>
+			</AntennaNearUnit>
+		</AntennaUnitGroup>
+    <AntennaUnitGroup antennaUnitGroupId="3">
+			<AntennaUnit antennaUnitId="1" mechanicalAntennaTilt="2">
+				<AntennaSubunit antennaSubunitId="1" minTotalTilt="-100" maxTotalTilt="100">
+					<AuPort auPortId="1"></AuPort>
+					<AuPort auPortId="2"></AuPort>
+				</AntennaSubunit>
+			</AntennaUnit>
+			<RfBranch rfBranchId="1" rfPortRef="RU-1-5-A" dlAttenuation="2" ulAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2">
+				<AuPortRef auPortId="1-1-1"></AuPortRef>
+			</RfBranch>
+			<RfBranch rfBranchId="2" rfPortRef="RU-1-6-A" dlAttenuation="2" ulAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2">
+				<AuPortRef auPortId="1-1-2"></AuPortRef>
+			</RfBranch>
+			<AntennaNearUnit antennaNearUnitId="1" rfPortRef="RU-1-5-A" anuType="IUANT" iuantDeviceType="2">
+				<TmaSubUnit tmaSubUnitId="1" rfBranchRef="1" dlAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2"></TmaSubUnit>
+        <TmaSubUnit tmaSubUnitId="2" rfBranchRef="2" dlAttenuation="2" dlTrafficDelay="2" ulTrafficDelay="2"></TmaSubUnit>
+			</AntennaNearUnit>
+			<AntennaNearUnit antennaNearUnitId="2" rfPortRef="RU-1-5-A" anuType="IUANT" iuantDeviceType="1">
+				<RetSubUnit retSubUnitId="1" antennaSubunitRef="1-1" electricalAntennaTilt="2"></RetSubUnit>
+			</AntennaNearUnit>
+		</AntennaUnitGroup>
+	</CommonAntennaSystem>
+</SiteEquipment>

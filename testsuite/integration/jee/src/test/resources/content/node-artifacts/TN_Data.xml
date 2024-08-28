@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bulkCmConfigDataFile xmlns:es="EricssonSpecificAttributes.14.02.xsd" xmlns:un="utranNrm.xsd" xmlns:xn="genericNrm.xsd" xmlns:gn="geranNrm.xsd" xmlns="configData.xsd">
+    <!-- Bulk CM TN template (or Bulk CM File), will be used for the creation of the Transport Network -->
+    <fileHeader fileFormatVersion="32.615 V4.5" vendorName="Ericsson" />
+    <configData dnPrefix="Undefined">
+        <xn:MeContext id="%NodeName%">
+            <xn:ManagedElement id="1">
+                <xn:VsDataContainer id="1" modifier="create">
+                    <xn:attributes>
+                        <xn:vsDataType>vsDataIpSystem</xn:vsDataType>
+                        <xn:vsDataFormatVersion>EricssonSpecificAttributes.14.02</xn:vsDataFormatVersion>
+                        <es:vsDataIpSystem />
+                    </xn:attributes>
+                    <xn:VsDataContainer id="1" modifier="create">
+                        <xn:attributes>
+                            <xn:vsDataType>vsDataIpAccessSctp</xn:vsDataType>
+                            <xn:vsDataFormatVersion>EricssonSpecificAttributes.14.02</xn:vsDataFormatVersion>
+                            <es:vsDataIpAccessSctp>
+                                <es:userLabel>ip_sctp</es:userLabel>
+                                <es:ipAccessHostEtRef1>MeContext=%NodeName%,ManagedElement=LTE01,vsDataIpSystem=1,vsDataIpAccessHostEt=1</es:ipAccessHostEtRef1>
+                            </es:vsDataIpAccessSctp>
+                        </xn:attributes>
+                    </xn:VsDataContainer>
+                </xn:VsDataContainer>
+                <xn:VsDataContainer id="1" modifier="create">
+                    <xn:attributes>
+                        <xn:vsDataType>vsDataTransportNetwork</xn:vsDataType>
+                        <xn:vsDataFormatVersion>EricssonSpecificAttributes.14.02</xn:vsDataFormatVersion>
+                        <es:vsDataTransportNetwork />
+                    </xn:attributes>
+                    <xn:VsDataContainer id="1" modifier="create">
+                        <xn:attributes>
+                            <xn:vsDataType>vsDataSctp</xn:vsDataType>
+                            <xn:vsDataFormatVersion>EricssonSpecificAttributes.14.02</xn:vsDataFormatVersion>
+                            <es:vsDataSctp>
+                                <heartbeatMaxBurst>1</heartbeatMaxBurst>
+                                <heartbeatPathProbingInterval>100</heartbeatPathProbingInterval>
+                                <pathSelection>SCTP_PATHS</pathSelection>
+                                <es:numberOfAssociations>320</es:numberOfAssociations>
+                                <es:minimumRto>10</es:minimumRto>
+                                <es:maximumRto>40</es:maximumRto>
+                                <es:initialRto>20</es:initialRto>
+                                <es:rtoAlphaIndex>4</es:rtoAlphaIndex>
+                                <es:rtoBetaIndex>4</es:rtoBetaIndex>
+                                <es:validCookieLife>20</es:validCookieLife>
+                                <es:allowedIncrementCookieLife>30</es:allowedIncrementCookieLife>
+                                <es:keyChangePeriod>30</es:keyChangePeriod>
+                                <es:associationMaxRtx>20</es:associationMaxRtx>
+                                <es:pathMaxRtx>10</es:pathMaxRtx>
+                                <es:maxInitialRtrAtt>10</es:maxInitialRtrAtt>
+                                <es:maxShutDownRtrAtt>10</es:maxShutDownRtrAtt>
+                                <es:heartbeatInterval>2</es:heartbeatInterval>
+                                <es:heartbeatStatus>TRUE</es:heartbeatStatus>
+                                <es:maxIncomingStream>2</es:maxIncomingStream>
+                                <es:maxOutgoingStream>2</es:maxOutgoingStream>
+                                <es:maxUserDataSize>556</es:maxUserDataSize>
+                                <es:mBuffer>16</es:mBuffer>
+                                <es:nThreshold>12</es:nThreshold>
+                                <es:tSack>10</es:tSack>
+                                <es:ipAccessSctpRef>MeContext=%NodeName%,ManagedElement=LTE01,vsDataIpSystem=1,vsDataIpAccessSctp=1</es:ipAccessSctpRef>
+                                <es:initialAdRecWin>16384</es:initialAdRecWin>
+                                <es:intervalOobPkts>1000</es:intervalOobPkts>
+                                <es:maxBurst>1000</es:maxBurst>
+                                <es:nPercentage>50</es:nPercentage>
+                                <es:bundlingActivated>ENABLED</es:bundlingActivated>
+                                <es:bundlingTimer>100</es:bundlingTimer>
+                                <es:rpuId>MeContext=%NodeName%,ManagedElement=LTE01,vsDataSwManagement=1,vsDataReliableProgramUniter=sctp_host</es:rpuId>
+                            </es:vsDataSctp>
+                        </xn:attributes>
+                    </xn:VsDataContainer>
+                </xn:VsDataContainer>
+                <xn:VsDataContainer id="1" modifier="update">
+                    <xn:attributes>
+                        <xn:vsDataType>vsDataENodeBFunction</xn:vsDataType>
+                        <xn:vsDataFormatVersion>EricssonSpecificAttributes.14.02</xn:vsDataFormatVersion>
+                        <es:vsDataENodeBFunction>
+                            <es:sctpRef>MeContext=%NodeName%,ManagedElement=LTE01,vsDataTransportNetwork=1,vsDataSctp=1</es:sctpRef>
+                            <es:eNodeBPlmnId>
+                                <es:mcc>240</es:mcc>
+                                <es:mnc>01</es:mnc>
+                                <es:mncLength>2</es:mncLength>
+                            </es:eNodeBPlmnId>
+                            <es:eNBId>133</es:eNBId>
+                        </es:vsDataENodeBFunction>
+                    </xn:attributes>
+                </xn:VsDataContainer>
+            </xn:ManagedElement>
+        </xn:MeContext>
+    </configData>
+    <fileFooter dateTime="2004-07-16T14:34:39Z" />
+</bulkCmConfigDataFile>

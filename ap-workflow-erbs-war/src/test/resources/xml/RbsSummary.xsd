@@ -1,0 +1,35 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+    <xs:element name="AutoIntegrationRbsSummaryFile">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="Format">
+                    <xs:annotation>
+                        <xs:documentation>Contains information about the revision of the schema.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:attribute name="revision" fixed="F">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="F"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="ConfigurationFiles">
+                    <xs:annotation>
+                        <xs:documentation>Contains information about the file paths to the files located on the SMRS.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:attribute name="siteBasicFilePath" type="xs:string" use="required"/>
+                        <xs:attribute name="siteEquipmentFilePath" type="xs:string" use="required"/>
+                        <xs:attribute name="licensingKeyFilePath" type="xs:string" use="optional"/>
+                        <xs:attribute name="upgradePackageFilePath" type="xs:string" use="optional"/>
+                        <xs:attribute name="initialSecurityConfigurationFilePath" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

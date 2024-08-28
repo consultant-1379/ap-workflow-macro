@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ProductNumber  = 'CXC 173 3294/7'       R-State  = 'R8A'
+DocumentNumber = '2/006 91-CSH 103 22'
+Node version: M12B
+
+File    : SiteBasic.xml
+Purpose : Basic template for the Site Basic file
+
+Modified: March 13 2012
+-->
+
+<SiteBasic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="2_15519-CSH10322.xsd">
+	<Format revision="T"/>
+	<ENodeBFunction upIpAccessHostRef="1">
+		<RbsConfiguration ossCorbaNameServer="OssNotifications"/>
+	</ENodeBFunction>
+	<Ip dnsServer1="10.212.100.10" dnsServer2="10.212.100.11"/>
+	<IpInterface ipInterfaceId="2" ipInterfaceSlot="DU-1" defaultRouter0="10.100.0.1" networkPrefixLength="20" vid="2100" />
+	<ManagedElementData ntpServerAddressPrimary="10.212.101.10" ntpServiceActivePrimary="TRUE" ntpServerAddressSecondary="10.212.101.11" ntpServiceActiveSecondary="FALSE" ntpServerAddressThird="10.212.101.12" ntpServiceActiveThird="FALSE" nodeLocalTimeZone="ECT" daylightSavingTime="FALSE" swServerUrlList="ftp://intra.example.com/sw/property.file"/>
+	<IpSystem> 
+		<IpAccessHostEt ipAccessHostEtId="1" ipInterfaceMoRef="DU-1-IP-2" ipAddress="12.2.2.2">
+			<IpSyncRef ipSyncRefId="1" ntpServerIpAddress="10.100.0.10"/>
+			<IpSyncRef ipSyncRefId="2" ntpServerIpAddress="10.100.0.11"/>
+		</IpAccessHostEt>
+	</IpSystem>	
+	<TuSyncRef tuSyncRefId="1" tuSyncRefSlot="DU-1"/>
+	<Synchronization syncPriorityRef1="DU-1-1" syncPriorityRef2="IP-1-1" syncPriorityRef3="IP-1-2"/>
+</SiteBasic>

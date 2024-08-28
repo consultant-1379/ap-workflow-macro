@@ -1,0 +1,50 @@
+version: "2.1"
+
+services:
+  #Image containing models
+  model-deployment:
+    container_name: model-deployment
+    image: armdocker.rnd.ericsson.se/proj_oss/autoprovisioning/model_deployment
+    volumes:
+    - /etc/opt/ericsson/ERICmodeldeployment
+    - /etc/opt/ericsson/ERICmodeldeployment/data
+    - /etc/opt/ericsson/ERICmodeldeployment/models
+
+  #Image containing neo4j
+  neo4j:
+    container_name: ap_neo4j
+    image: armdocker.rnd.ericsson.se/proj_oss_releases/enm/neo4j4
+    ports:
+    - '7474:7474'
+    - '7473:7473'
+    - '7687:7687'
+    hostname: neo4j1
+
+  postgres:
+    container_name: postgresql_service_ap
+    image: armdocker.rnd.ericsson.se/proj_oss/autoprovisioning/postgresql_service:latest
+    ports:
+      - "5432:5432"
+    hostname: postgresql-server
+
+  jboss:
+    container_name: workflow_macro_jboss_service_ap
+    build: ./src/test/docker/jboss
+    links:
+      - neo4j:neo4j1
+      - postgres:postgresql-server
+    depends_on:
+      - model-deployment
+      - neo4j
+    volumes:
+      - ./src/test/docker/jboss/config:/opt/ericsson/docker/config
+    volumes_from:
+      - neo4j
+      - model-deployment
+    environment:
+      - JAVA_OPTS=-Xms4g -Xmx4g -XX:PermSize=512m -XX:MaxPermSize=1g -Djboss.as.management.blocking.timeout=1200 -verbose:class -Ddps_ignore_mediation=true -DbaseDn=dc=vts,dc=com -Dcm_VIP=127.0.0.1 -Dmsap_IPv6_IPs=0:0:0:0:0:0:0:1 -Djboss.modules.system.pkgs=com.sun.crypto.provider -Dneo4j.server.hostname=neo4j1 -Dneo4j.serverTransport=bolt -XX:-UseGCOverheadLimit
+    ports:
+      - "9999:9999"
+      - "9990:9990"
+      - "8080:8080"
+      - "8787:8787"
